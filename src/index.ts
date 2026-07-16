@@ -1,6 +1,4 @@
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
-import { walkSourceFiles } from "./fileWalk.js";
+import { discoverMergedPackageManifest, walkSourceFiles } from "./fileWalk.js";
 import { checkSecrets } from "./checks/secrets.js";
 import { checkPhantomImports } from "./checks/phantomImports.js";
 import { checkDuplication } from "./checks/duplication.js";
@@ -8,7 +6,7 @@ import { checkDeadExports } from "./checks/deadExports.js";
 import { checkHallucinatedDeps } from "./checks/hallucinatedDeps.js";
 import { checkDependencyRisk } from "./checks/dependencyRisk.js";
 import { buildScorecard } from "./scorecard.js";
-import type { PackageJson, Scorecard } from "./types.js";
+import type { Scorecard } from "./types.js";
 
 export * from "./types.js";
 export { buildScorecard } from "./scorecard.js";
@@ -24,14 +22,7 @@ export async function scan(
   opts: ScanOptions = {},
 ): Promise<Scorecard> {
   const files = await walkSourceFiles(targetDir);
-
-  let pkg: PackageJson = {};
-  try {
-    const raw = await readFile(join(targetDir, "package.json"), "utf8");
-    pkg = JSON.parse(raw) as PackageJson;
-  } catch {
-    // no package.json -- dependency-based checks will simply find nothing to check
-  }
+  const pkg = await discoverMergedPackageManifest(targetDir);
 
   const deterministic = [
     checkSecrets(files),

@@ -42,8 +42,15 @@ const DYNAMIC_IMPORT_RE = /\bimport\(\s*["']([^"']+)["']\s*\)/g;
 
 function packageNameOf(specifier: string): string | null {
   if (specifier.startsWith(".") || specifier.startsWith("/")) return null; // relative/absolute
-  if (specifier.startsWith("node:")) return null; // explicit builtin
-  if (NODE_BUILTINS.has(specifier)) return null;
+  if (specifier.startsWith("node:")) return null; // explicit builtin, e.g. "node:fs/promises"
+  if (specifier === "@/" || specifier.startsWith("@/")) return null; // TS/Next/Vite path alias,
+  // never a real scoped npm package -- a real scope always has a name between "@" and "/"
+  // (e.g. "@babel/parser"), so a bare "@/" prefix is structurally impossible as npm syntax.
+
+  const firstSegment = specifier.split("/")[0];
+  if (NODE_BUILTINS.has(firstSegment)) return null; // covers builtin subpaths like "fs/promises",
+  // "stream/promises" -- a builtin's own package name is always its first path segment.
+
   // scoped package "@scope/name/subpath" -> "@scope/name"; unscoped "name/subpath" -> "name"
   const parts = specifier.split("/");
   return specifier.startsWith("@") ? parts.slice(0, 2).join("/") : parts[0];
