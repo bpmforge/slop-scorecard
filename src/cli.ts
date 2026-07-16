@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { scan } from "./index.js";
 import { renderBadge } from "./badge.js";
@@ -54,6 +54,8 @@ async function main() {
       `\nThe paid audit substantiates every number: human-verified findings, attack-chain analysis, and a decision-grade report. https://codereckon.com\n`,
     );
   }
+
+  await mkdir(outDir, { recursive: true });
 
   await writeFile(
     resolve(outDir, "slop-scorecard-report.json"),
