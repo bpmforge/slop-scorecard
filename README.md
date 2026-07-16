@@ -56,10 +56,12 @@ known-bad regression grade against `sample/sampleco`.
 ## What this is not
 
 This is the free lead-magnet tool. It flags candidates for review with heuristics that are
-honest about their limits (see the doc comments in `src/checks/`). The paid
-[CodeReckon](https://codereckon.com) audit human-verifies every finding, adds attack-chain
-synthesis, and delivers a decision-grade report — this CLI tells you the number is worth looking
-into; the audit tells you exactly what's wrong and how to fix it.
+honest about their limits (see the doc comments in `src/checks/`). The paid **CodeReckon** audit
+(codereckon.com — coming soon) human-verifies every finding, adds attack-chain synthesis, and
+delivers a decision-grade report — this CLI tells you the number is worth looking into; the audit
+tells you exactly what's wrong and how to fix it. See a real example:
+[**sample-report/**](sample-report/) — a full audit report run against the SampleCo fixture in
+this repo, including the attack-chain analysis and a 100%-recall validation record.
 
 ## Development
 
