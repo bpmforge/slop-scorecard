@@ -1,0 +1,44 @@
+name: Dogfood the action
+
+# Exercises this repo's own composite action against SampleCo -- the deliberately vibe-coded
+# fixture with a known-bad ground truth (sample/sampleco/PLANTED_DEFECTS.md). This is a
+# regression test on the action itself, not just the library: it fails the build if the action
+# stops reporting SampleCo as an F grade, which would mean either a check silently broke or the
+# action's plumbing (github.action_path, output wiring) regressed.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  dogfood:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Run slop-scorecard against SampleCo
+        id: scorecard
+        uses: ./
+        with:
+          path: sample/sampleco
+          offline: "true" # deterministic in CI; network checks are covered by the test suite
+          comment-pr: "false"
+
+      - name: Assert known-bad grade (regression check)
+        run: |
+          echo "overall-grade=${{ steps.scorecard.outputs.overall-grade }}"
+          echo "slop-index=${{ steps.scorecard.outputs.slop-index }}"
+          if [ "${{ steps.scorecard.outputs.overall-grade }}" != "F" ]; then
+            echo "::error::Expected SampleCo to score F (it's a deliberately vibe-coded fixture with 12 planted defects) but got ${{ steps.scorecard.outputs.overall-grade }}. Either a check regressed, or the ground truth in sample/sampleco/PLANTED_DEFECTS.md needs revisiting."
+            exit 1
+          fi
+
+      - name: Upload scorecard report artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: sampleco-scorecard-report
+          path: .slop-scorecard/

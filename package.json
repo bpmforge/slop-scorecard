@@ -1,0 +1,47 @@
+{
+  "name": "slop-scorecard",
+  "version": "0.1.0",
+  "description": "Free deterministic AI-slop scorecard CLI -- duplication, phantom imports, hallucinated deps, dead exports, secrets, dependency staleness/CVE. No LLM required. Companion to CodeReckon (codereckon.com).",
+  "type": "module",
+  "license": "MIT",
+  "author": "Brad Matthews",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bpmforge/slop-scorecard.git"
+  },
+  "homepage": "https://github.com/bpmforge/slop-scorecard#readme",
+  "bugs": {
+    "url": "https://github.com/bpmforge/slop-scorecard/issues"
+  },
+  "keywords": [
+    "ai",
+    "code-quality",
+    "static-analysis",
+    "cli",
+    "slopsquatting",
+    "security"
+  ],
+  "bin": {
+    "slop-scorecard": "./dist/cli.js"
+  },
+  "main": "./dist/index.js",
+  "files": [
+    "dist",
+    "action.yml",
+    "action-scripts"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "scan": "tsx src/cli.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0"
+  }
+}
