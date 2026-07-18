@@ -53,6 +53,14 @@ Outputs: `overall-grade` (A–F) and `slop-index` (0–100). See
 `.github/workflows/dogfood.yml` in this repo for a working example that also asserts a
 known-bad regression grade against `sample/sampleco`.
 
+## Bonus rules (ast-grep / Opengrep, optional)
+
+[`rules/`](rules/) has 17 additional AI-slop and secrets rules — a public-teaser subset mirrored
+from our proprietary `bpm-rulepacks` corpus, MIT-licensed here. They're not wired into the CLI
+(this tool stays zero-dependency), but if you have [ast-grep](https://ast-grep.github.io/) or an
+Opengrep/Semgrep-compatible scanner installed, you can run them directly. See
+[`rules/README.md`](rules/README.md) for the full list and commands.
+
 ## What this is not
 
 This is the free lead-magnet tool. It flags candidates for review with heuristics that are

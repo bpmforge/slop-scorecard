@@ -1,0 +1,32 @@
+# --- mirrored from bpm-rulepacks (public-teaser subset) ---
+# Source of truth: bpm-rulepacks/astgrep/slop/ (proprietary corpus, private repo).
+# This file is a manual point-in-time copy of a rule tagged metadata.license: public-teaser.
+# MIT-licensed here; do not edit in place if bpm-rulepacks later revises the source rule --
+# re-copy instead. See rules/README.md for the resync procedure.
+# ast-grep rule — ANTI_SLOP R-03: exception-driven control flow.
+# Structural (AST), narrowed to the canonical shape from the ANTI_SLOP text:
+# try { ... JSON.parse(...) ... } catch { return <default> }. Exceptions
+# are 100-1000x more expensive than conditional checks and obscure intent
+# when used to handle an EXPECTED failure mode (malformed input).
+id: bpm-slop-try-parse-fallback
+language: typescript
+severity: warning
+rule:
+  any:
+    - pattern: try { $$$BODY } catch { return $VAL }
+    - pattern: try { $$$BODY } catch ($ERR) { return $VAL }
+  has:
+    pattern: JSON.parse($$$)
+    stopBy: end
+message: >
+  try/catch around JSON.parse used as control flow (ANTI_SLOP R-03) —
+  exceptions are far more expensive than conditional checks and this
+  silently hides the parse failure. Use a guarded try-parse helper that
+  validates before parsing, or surfaces the failure explicitly.
+metadata:
+  license: public-teaser
+  provenance: "ported:bpm-opencode-experts/ANTI_SLOP_RULES R-03"
+  cwe: [390]
+  confidence: medium
+  concept: logging_audit
+  since: "0.1.0"

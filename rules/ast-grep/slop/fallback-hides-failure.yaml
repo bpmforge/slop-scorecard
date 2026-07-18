@@ -1,0 +1,32 @@
+# --- mirrored from bpm-rulepacks (public-teaser subset) ---
+# Source of truth: bpm-rulepacks/astgrep/slop/ (proprietary corpus, private repo).
+# This file is a manual point-in-time copy of a rule tagged metadata.license: public-teaser.
+# MIT-licensed here; do not edit in place if bpm-rulepacks later revises the source rule --
+# re-copy instead. See rules/README.md for the resync procedure.
+# ast-grep rule — ANTI_SLOP R-10: fallback values that hide failures.
+# Structural (AST): a catch block whose entire body is a bare
+# return of an empty/null "success-shaped" value ([], "", null) — the
+# caller cannot distinguish "no data" from "fetch failed."
+id: bpm-slop-fallback-hides-failure
+language: typescript
+severity: warning
+rule:
+  any:
+    - pattern: try { $$$BODY } catch { return [] }
+    - pattern: try { $$$BODY } catch ($ERR) { return [] }
+    - pattern: try { $$$BODY } catch { return "" }
+    - pattern: try { $$$BODY } catch ($ERR) { return "" }
+    - pattern: try { $$$BODY } catch { return null }
+    - pattern: try { $$$BODY } catch ($ERR) { return null }
+message: >
+  catch returns an empty/null fallback (ANTI_SLOP R-10) — the caller
+  cannot distinguish "no data" from "fetch failed." Monitoring misses the
+  failure. Return a typed error result or throw; never return a value
+  that looks like success.
+metadata:
+  license: public-teaser
+  provenance: "ported:bpm-opencode-experts/ANTI_SLOP_RULES R-10"
+  cwe: [390]
+  confidence: high
+  concept: logging_audit
+  since: "0.1.0"
