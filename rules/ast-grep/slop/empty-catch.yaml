@@ -1,0 +1,24 @@
+# --- mirrored from bpm-rulepacks (public-teaser subset) ---
+# Source of truth: bpm-rulepacks/astgrep/slop/ (proprietary corpus, private repo).
+# This file is a manual point-in-time copy of a rule tagged metadata.license: public-teaser.
+# MIT-licensed here; do not edit in place if bpm-rulepacks later revises the source rule --
+# re-copy instead. See rules/README.md for the resync procedure.
+# ast-grep rule — ANTI_SLOP R-01: swallowed error (empty catch block).
+# Structural (AST), no dataflow needed. Autofix intentionally omitted: the fix
+# is a human decision (log, rethrow, or handle), never a mechanical rewrite.
+id: bpm-slop-empty-catch
+language: typescript
+severity: warning
+rule:
+  pattern: |
+    try { $$$ } catch ($ERR) { }
+message: >
+  Empty catch block swallows the error (ANTI_SLOP R-01). Handle it, log it with
+  context, or rethrow — a silent catch hides failures the audit must surface.
+metadata:
+  license: public-teaser
+  provenance: ported:bpm-opencode-experts/ANTI_SLOP_RULES R-01
+  cwe: [390]
+  confidence: high
+  concept: logging_audit
+  since: "0.1.0"

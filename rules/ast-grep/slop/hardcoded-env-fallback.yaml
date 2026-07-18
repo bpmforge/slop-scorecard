@@ -1,0 +1,41 @@
+# --- mirrored from bpm-rulepacks (public-teaser subset) ---
+# Source of truth: bpm-rulepacks/astgrep/slop/ (proprietary corpus, private repo).
+# This file is a manual point-in-time copy of a rule tagged metadata.license: public-teaser.
+# MIT-licensed here; do not edit in place if bpm-rulepacks later revises the source rule --
+# re-copy instead. See rules/README.md for the resync procedure.
+# ast-grep rule — ANTI_SLOP R-23: elevated credential leakage rate.
+# Structural (AST), narrowed to the canonical fallback shape from the
+# ANTI_SLOP text: `process.env.$SECRET_LIKE || "literal"`. A generic
+# hardcoded-secret-assignment (`apiKey = "..."`) is already covered by
+# packs/secrets/hardcoded-credentials.yaml (a different pack, ported under
+# W1-06); this rule is scoped to the fallback-specific shape that pack does
+# not match — the `||` operator, not `=`/`:`, sits between the env lookup
+# and the literal, so bpm-secret-generic-assignment's regex never fires on
+# it. The env-var name is constrained to secret-shaped keywords so
+# legitimate non-secret defaults (`process.env.PORT || "3000"`) stay clean.
+id: bpm-slop-hardcoded-env-fallback
+language: typescript
+severity: warning
+rule:
+  pattern: $ENV || $FALLBACK
+constraints:
+  ENV:
+    regex: (?i)process\.env\.\w*(secret|password|token|api[_-]?key|credential)\w*
+  FALLBACK:
+    kind: string
+message: >
+  A secret-shaped environment variable falls back to a hardcoded string
+  literal (ANTI_SLOP R-23, CWE-798: Use of Hard-coded Credentials). AI
+  assistants expose secrets at roughly 2x the rate of human-only commits
+  (CSA 2025) — this pattern is a common source: a "just make it run"
+  fallback that ships a real or production-shaped credential when the env
+  var is unset. Remove the literal fallback; fail closed (throw/exit) when
+  a required secret is missing.
+metadata:
+  license: public-teaser
+  provenance: "ported:bpm-opencode-experts/ANTI_SLOP_RULES R-23"
+  cwe: [798]
+  owasp: "A07:2021"
+  confidence: high
+  concept: secrets_config
+  since: "0.1.0"

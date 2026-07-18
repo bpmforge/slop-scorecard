@@ -1,0 +1,36 @@
+# --- mirrored from bpm-rulepacks (public-teaser subset) ---
+# Source of truth: bpm-rulepacks/astgrep/slop/ (proprietary corpus, private repo).
+# This file is a manual point-in-time copy of a rule tagged metadata.license: public-teaser.
+# MIT-licensed here; do not edit in place if bpm-rulepacks later revises the source rule --
+# re-copy instead. See rules/README.md for the resync procedure.
+# ast-grep rule — ANTI_SLOP R-27: unimplemented stubs as features.
+# Structural (AST), narrowed to the canonical shape the ANTI_SLOP text's own
+# grep signal names: `throw new Error("not implemented")` (and near
+# variants — "unimplemented", "TODO: implement"). This exact throw is never
+# a legitimate production statement; unlike a broader "empty function body"
+# check (which would false-positive on real no-op handlers), an explicit
+# not-implemented message is always the antipattern the rule describes, so
+# the .ok fixture can stay clean by simply implementing the function.
+id: bpm-slop-unimplemented-stub-throw
+language: typescript
+severity: warning
+rule:
+  pattern: throw new Error($MSG)
+constraints:
+  MSG:
+    kind: string
+    regex: (?i)not.?implemented|unimplemented|todo.*implement
+message: >
+  Function body throws a "not implemented" error (ANTI_SLOP R-27:
+  Unimplemented Stubs as Features). Callers — including other
+  AI-generated code that sees this function in context — get a runtime
+  error or treat the stub as a real implementation. Stubs are only
+  acceptable on an explicit TODO branch called out in the PR description;
+  never export or ship a stub as a completed feature.
+metadata:
+  license: public-teaser
+  provenance: "ported:bpm-opencode-experts/ANTI_SLOP_RULES R-27"
+  cwe: [1078]
+  confidence: high
+  concept: code_quality
+  since: "0.1.0"

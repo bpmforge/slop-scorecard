@@ -1,0 +1,34 @@
+# --- mirrored from bpm-rulepacks (public-teaser subset) ---
+# Source of truth: bpm-rulepacks/astgrep/slop/ (proprietary corpus, private repo).
+# This file is a manual point-in-time copy of a rule tagged metadata.license: public-teaser.
+# MIT-licensed here; do not edit in place if bpm-rulepacks later revises the source rule --
+# re-copy instead. See rules/README.md for the resync procedure.
+# ast-grep rule — ANTI_SLOP R-02: try/catch inside a tight loop.
+# Structural (AST): matches a try/catch nested anywhere inside a for/for-in/
+# for-of/while/do loop body. No dataflow needed — the shape alone is the
+# signal (V8 and other JITs cannot optimize functions containing try/catch
+# in hot loops; move the try/catch to wrap the loop instead).
+id: bpm-slop-try-catch-in-loop
+language: typescript
+severity: warning
+rule:
+  pattern: try { $$$ } catch ($ERR) { $$$ }
+  inside:
+    stopBy: end
+    any:
+      - kind: for_statement
+      - kind: for_in_statement
+      - kind: while_statement
+      - kind: do_statement
+message: >
+  try/catch inside a tight loop (ANTI_SLOP R-02) — JIT compilers cannot
+  optimize functions with try/catch in hot loops (5-20x slowdown measured
+  in production). Wrap the loop, not each iteration; validate before the
+  loop if items can be invalid.
+metadata:
+  license: public-teaser
+  provenance: "ported:bpm-opencode-experts/ANTI_SLOP_RULES R-02"
+  cwe: [1050]
+  confidence: medium
+  concept: logging_audit
+  since: "0.1.0"

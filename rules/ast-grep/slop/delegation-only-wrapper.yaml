@@ -1,0 +1,33 @@
+# --- mirrored from bpm-rulepacks (public-teaser subset) ---
+# Source of truth: bpm-rulepacks/astgrep/slop/ (proprietary corpus, private repo).
+# This file is a manual point-in-time copy of a rule tagged metadata.license: public-teaser.
+# MIT-licensed here; do not edit in place if bpm-rulepacks later revises the source rule --
+# re-copy instead. See rules/README.md for the resync procedure.
+# ast-grep rule — ANTI_SLOP R-06: delegation-only wrapper class.
+# Structural (AST), narrowed to the canonical shape: a class with an
+# empty-bodied constructor and exactly one zero-arg method whose entire
+# body is `return this.<dep>.<sameMethodName>()` — pure forwarding, no
+# transformation/validation/caching/error-mapping added.
+id: bpm-slop-delegation-only-wrapper
+language: typescript
+severity: hint
+rule:
+  pattern: |
+    class $CLASS {
+      constructor($ARGS) {}
+      $METHOD() {
+        return this.$DEP.$METHOD();
+      }
+    }
+message: >
+  delegation-only wrapper class (ANTI_SLOP R-06) adds a type and file for
+  zero behavior — it forwards to the dependency with no transformation,
+  validation, caching, or error mapping. Inline the dependency call at the
+  call site, or add real logic to justify the wrapper.
+metadata:
+  license: public-teaser
+  provenance: "ported:bpm-opencode-experts/ANTI_SLOP_RULES R-06"
+  cwe: [710]
+  confidence: medium
+  concept: code_quality
+  since: "0.1.0"
