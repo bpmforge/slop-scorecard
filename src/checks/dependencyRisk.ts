@@ -7,9 +7,10 @@ interface OsvVuln {
 
 /**
  * For each *exact-pinned* dependency (no ^ or ~ range -- the AI-generated-code smell that
- * blocks patch uptake), checks (a) how far behind npm's dist-tags.latest it is, and (b) known
- * vulnerabilities via the OSV.dev API (https://api.osv.dev/v1/query). Response shapes for both
- * were verified live against the registry before writing this check.
+ * blocks patch uptake), (a) flags the pin itself and (b) checks known vulnerabilities for that
+ * exact version via the OSV.dev API (https://api.osv.dev/v1/query). There is no staleness
+ * (dist-tags.latest) comparison. The OSV response shape was verified live before writing this
+ * check.
  *
  * Network-dependent: reports "skipped" rather than a silent clean result if either API is
  * unreachable.
