@@ -52,7 +52,7 @@ if you want the extra coverage.
 | `opengrep/secrets/` | Opengrep/Semgrep `pattern-regex` (generic) | 5 hardcoded-credential patterns (GitHub PAT, Stripe live key, Slack token, PEM private key, AWS access key ID) |
 | `opengrep/slop/` | Opengrep/Semgrep `pattern-regex` (generic) | 2 ANTI_SLOP R-29 prose-padding patterns (hedging opener, fake-specificity citation) |
 
-17 rule IDs across 15 files, all `metadata.license: public-teaser` in the upstream corpus.
+17 rule IDs across 16 files, all `metadata.license: public-teaser` in the upstream corpus.
 
 ## Resyncing
 
