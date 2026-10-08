@@ -12,7 +12,8 @@ Checks:
 - **Duplication** — near-identical code blocks across files (naive n-gram heuristic)
 - **Dead exports** — exported names never referenced elsewhere in the scanned tree (heuristic;
   comments are stripped before this check so a name mentioned only in a comment doesn't count)
-- **Dependency risk** — exact-pinned dependencies and known CVEs via OSV.dev
+- **Dependency risk** — exact-pinned dependencies, and known CVEs for those pinned versions via
+  OSV.dev (range-specified dependencies are not looked up)
 
 Every network-dependent check reports an explicit `SKIPPED` status (with a reason) if the
 registry is unreachable — it never silently reports zero findings as if it ran clean.
@@ -20,14 +21,20 @@ registry is unreachable — it never silently reports zero findings as if it ran
 ## Usage
 
 ```
-npm install
+npm ci
 npx tsx src/cli.ts <path-to-repo> [--out <dir>] [--offline] [--json]
 ```
+
+The path must be the first argument (it defaults to `.` when the first argument is a flag).
+`--offline` skips the two network checks (reported as `SKIPPED`); `--json` prints the full
+scorecard as JSON instead of the text summary. Or build once with `npm run build` and run
+`node dist/cli.js <path-to-repo>`.
 
 (Once published to npm: `npx slop-scorecard <path-to-repo>` — no clone required.)
 
 Writes `slop-scorecard-report.json` (full structured output) and `slop-scorecard-badge.svg`
-(shareable grade badge) to `--out` (defaults to the scanned directory).
+(shareable grade badge) to `--out` (defaults to the scanned directory; created if missing). Both files are written with or without
+`--json`.
 
 ## GitHub Action
 
@@ -75,7 +82,8 @@ this repo, including the attack-chain analysis and a 100%-recall validation reco
 
 ```
 npm test          # vitest, run against sample/sampleco
-npm run lint       # tsc --noEmit
+npm run lint      # tsc --noEmit
+npm run build     # tsc -> dist/
 ```
 
 The test suite's "online" describe block exercises the live npm/OSV.dev checks against the
