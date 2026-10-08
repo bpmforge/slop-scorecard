@@ -25,6 +25,7 @@ Nothing is tagged or published to npm yet. `package.json` says `0.1.0`. This ent
 
 ### Fixed
 
+- Dependency risk recorded no CVEs when OSV.dev answered with a non-OK HTTP status (a 429 or 5xx, say), which reads as clean. It now reports `SKIPPED` with the status, the same as when OSV.dev is unreachable.
 - `--out` pointing at a directory that doesn't exist crashed with `ENOENT` after the scorecard printed. The CLI now creates the directory.
 - Phantom imports had three false-positive sources, now fixed:
   - Node builtin subpaths (`fs/promises`) are recognised.

@@ -16,7 +16,8 @@ Checks:
   OSV.dev (range-specified dependencies are not looked up)
 
 Every network-dependent check reports an explicit `SKIPPED` status (with a reason) if the
-registry is unreachable — it never silently reports zero findings as if it ran clean.
+registry is unreachable — it never silently reports zero findings as if it ran clean. The
+dependency-risk check also reports `SKIPPED` when OSV.dev answers with a non-OK HTTP status.
 
 ## Usage
 
