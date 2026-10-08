@@ -1,7 +1,7 @@
 # SampleCo — Planted Defect Ledger
 
 Ground truth for pipeline validation. Every row must appear in the generated CodeReckon Audit
-Report. Severity/difficulty use the CodeReckon scale (see docs/SAMPLE_REPORT_OUTLINE.md).
+Report. Severity/difficulty use the CodeReckon scale (see the worked example in ../../sample-report/SAMPLE_AUDIT_REPORT.md).
 IDs here map to expected report finding IDs.
 
 | # | Defect | File:approx line | Taxonomy | Severity | In attack chain? |

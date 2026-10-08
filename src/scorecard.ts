@@ -57,8 +57,8 @@ export function buildScorecard(checks: CheckResult[]): Scorecard {
     ),
   };
 
-  // AI-Slop Index: weighted composite, 0-100, lower is better -- same convention as
-  // docs/METHODOLOGY.md's scorecard (the paid audit's dimension of the same name).
+  // AI-Slop Index: weighted composite, 0-100, lower is better -- same convention as the
+  // paid CodeReckon audit's scorecard dimension of the same name.
   const slopIndex = Math.min(
     100,
     Math.round(
