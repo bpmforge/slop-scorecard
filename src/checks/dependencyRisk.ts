@@ -7,12 +7,14 @@ interface OsvVuln {
 
 /**
  * For each *exact-pinned* dependency (no ^ or ~ range -- the AI-generated-code smell that
- * blocks patch uptake), checks (a) how far behind npm's dist-tags.latest it is, and (b) known
- * vulnerabilities via the OSV.dev API (https://api.osv.dev/v1/query). Response shapes for both
- * were verified live against the registry before writing this check.
+ * blocks patch uptake), (a) flags the pin itself and (b) checks known vulnerabilities for that
+ * exact version via the OSV.dev API (https://api.osv.dev/v1/query). There is no staleness
+ * (dist-tags.latest) comparison. The OSV response shape was verified live before writing this
+ * check.
  *
- * Network-dependent: reports "skipped" rather than a silent clean result if either API is
- * unreachable.
+ * Network-dependent: reports "skipped" rather than a silent clean result if OSV.dev is
+ * unreachable or answers with a non-OK HTTP status. A 4xx/5xx carries no vulnerability data,
+ * so treating it as "no CVEs" would be a false clean.
  */
 export async function checkDependencyRisk(
   pkg: PackageJson,
@@ -50,15 +52,21 @@ export async function checkDependencyRisk(
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ package: { name, ecosystem: "npm" }, version }),
       });
-      if (osvRes.ok) {
-        const body = (await osvRes.json()) as { vulns?: OsvVuln[] };
-        for (const vuln of body.vulns ?? []) {
-          findings.push({
-            rule: "SLOP-DEP-CVE",
-            title: `"${name}"@${version} has a known vulnerability: ${vuln.id}`,
-            detail: vuln.summary ?? `See ${vuln.id} on OSV.dev for details.`,
-          });
-        }
+      if (!osvRes.ok) {
+        return {
+          name: "dependency-risk",
+          status: "skipped",
+          skipReason: `OSV.dev returned HTTP ${osvRes.status} for ${name}@${version}`,
+          findings,
+        };
+      }
+      const body = (await osvRes.json()) as { vulns?: OsvVuln[] };
+      for (const vuln of body.vulns ?? []) {
+        findings.push({
+          rule: "SLOP-DEP-CVE",
+          title: `"${name}"@${version} has a known vulnerability: ${vuln.id}`,
+          detail: vuln.summary ?? `See ${vuln.id} on OSV.dev for details.`,
+        });
       }
     }
   } catch (err) {

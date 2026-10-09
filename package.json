@@ -1,7 +1,7 @@
 {
   "name": "slop-scorecard",
   "version": "0.1.0",
-  "description": "Free deterministic AI-slop scorecard CLI -- duplication, phantom imports, hallucinated deps, dead exports, secrets, dependency staleness/CVE. No LLM required. Companion to CodeReckon (codereckon.com).",
+  "description": "Free deterministic AI-slop scorecard CLI -- duplication, phantom imports, hallucinated deps, dead exports, secrets, exact-pinned deps + CVEs. No LLM required. Companion to CodeReckon (codereckon.com).",
   "type": "module",
   "license": "MIT",
   "author": "Brad Matthews",
