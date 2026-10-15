@@ -30,8 +30,16 @@
     "action.yml",
     "action-scripts"
   ],
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "scripts": {
     "build": "tsc",
+    "prepack": "tsc",
     "scan": "tsx src/cli.ts",
     "test": "vitest run",
     "test:watch": "vitest",

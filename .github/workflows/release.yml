@@ -1,0 +1,57 @@
+name: Release
+
+# Runs when a version tag (v1.2.3) is pushed -- including the tag GitHub creates when you
+# publish a release from the UI with "Publish this Action to the GitHub Marketplace" ticked.
+# It re-runs the checks on the tagged commit, publishes that version to npm, and moves the
+# major-version tag (v1) so `uses: bpmforge/slop-scorecard@v1` picks up the release.
+#
+# Needs an NPM_TOKEN repository secret (an npm automation or granular token with publish
+# rights) until npm trusted publishing is configured for this repo; after that, the
+# id-token permission below is enough and the secret can be removed.
+
+on:
+  push:
+    tags: ["v[0-9]+.[0-9]+.[0-9]+"]
+
+permissions:
+  contents: write # move the major-version tag
+  id-token: write # npm provenance / trusted publishing
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Check the tag matches package.json
+        run: |
+          PKG_VERSION="v$(node -p "require('./package.json').version")"
+          if [ "$PKG_VERSION" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME doesn't match package.json version $PKG_VERSION. Bump package.json first."
+            exit 1
+          fi
+
+      - name: Install
+        run: npm ci
+
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      - name: Test
+        run: npx vitest run
+
+      - name: Publish to npm
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Move the major-version tag
+        run: |
+          MAJOR="${GITHUB_REF_NAME%%.*}"
+          git tag -f "$MAJOR" "$GITHUB_SHA"
+          git push -f origin "refs/tags/$MAJOR"

@@ -4,7 +4,9 @@ All notable changes are documented here. Format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
-Nothing is tagged or published to npm yet. `package.json` says `0.1.0`. This entry covers everything on `main` so far.
+## [0.1.0] - 2026-10-15
+
+First release: the `slop-scorecard` npm package and the `bpmforge/slop-scorecard@v1` GitHub Action.
 
 ### Added
 
@@ -22,6 +24,7 @@ Nothing is tagged or published to npm yet. `package.json` says `0.1.0`. This ent
 - **SampleCo fixture** (`sample/sampleco/`). A deliberately vibe-coded demo app with 12 planted defects, listed in `PLANTED_DEFECTS.md`.
 - **CodeReckon sample audit report** (`sample-report/`). A worked example of the paid audit, run against SampleCo, with its recall check.
 - **`rules/`**. A hand-mirrored, MIT-licensed public-teaser subset of `bpm-rulepacks`: 17 rule IDs in 16 files (ast-grep slop rules, plus Opengrep secrets and prose-padding rules). These rules are optional and are not wired into the CLI.
+- **Release workflow** (`.github/workflows/release.yml`). Pushing a `v*.*.*` tag re-runs the checks, publishes to npm with provenance, and moves the major-version tag.
 
 ### Changed
 
@@ -35,3 +38,6 @@ Nothing is tagged or published to npm yet. `package.json` says `0.1.0`. This ent
   - Node builtin subpaths (`fs/promises`) are recognised.
   - `@/` path aliases are no longer treated as npm scopes.
   - Dependencies are merged from every `package.json` in the scanned tree, not just the root. The hallucinated-deps and dependency-risk checks get the same merged manifest.
+
+[Unreleased]: https://github.com/bpmforge/slop-scorecard/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/bpmforge/slop-scorecard/releases/tag/v0.1.0

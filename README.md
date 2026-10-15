@@ -26,16 +26,14 @@ dependency-risk check also reports `SKIPPED` when OSV.dev answers with a non-OK 
 ## Usage
 
 ```
-npm ci
-npx tsx src/cli.ts <path-to-repo> [--out <dir>] [--offline] [--json]
+npx slop-scorecard <path-to-repo> [--out <dir>] [--offline] [--json]
 ```
+
+Needs Node 20 or later. From a clone instead: `npm ci`, then `npx tsx src/cli.ts <path-to-repo>`.
 
 The path must be the first argument (it defaults to `.` when the first argument is a flag).
 `--offline` skips the two network checks (reported as `SKIPPED`); `--json` prints the full
-scorecard as JSON instead of the text summary. Or build once with `npm run build` and run
-`node dist/cli.js <path-to-repo>`.
-
-(Once published to npm: `npx slop-scorecard <path-to-repo>` — no clone required.)
+scorecard as JSON instead of the text summary.
 
 Writes `slop-scorecard-report.json` (full structured output) and `slop-scorecard-badge.svg`
 (shareable grade badge) to `--out` (defaults to the scanned directory; created if missing). Both files are written with or without
@@ -47,7 +45,7 @@ Runs the same scan in CI, writes a job summary, and (on pull requests) posts or 
 scorecard comment on the PR — no third-party comment-posting action required.
 
 ```yaml
-- uses: bpmforge/slop-scorecard@main
+- uses: bpmforge/slop-scorecard@v1
   with:
     path: .              # directory to scan, default "."
     offline: "false"     # skip the npm/OSV.dev checks if true
@@ -94,6 +92,18 @@ npm run build     # tsc -> dist/
 The test suite's "online" describe block exercises the live npm/OSV.dev checks against the
 fixture app in `sample/sampleco/` and tolerates a network-restricted environment by accepting an
 explicit `skipped` status.
+
+### Releasing
+
+1. Bump `version` in `package.json` and move the `[Unreleased]` notes in `CHANGELOG.md` under
+   the new version.
+2. On GitHub, draft a release with a new tag `v<version>` (it must match `package.json`) and
+   tick "Publish this Action to the GitHub Marketplace".
+3. Publishing the release pushes the tag, which runs `.github/workflows/release.yml`: it
+   re-runs the checks, publishes to npm, and moves the `v1` tag to the release.
+
+The workflow needs an `NPM_TOKEN` repository secret until npm trusted publishing is set up for
+this repo.
 
 ## License
 
