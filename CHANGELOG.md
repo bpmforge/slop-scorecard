@@ -15,13 +15,17 @@ Nothing is tagged or published to npm yet. `package.json` says `0.1.0`. This ent
   - Hallucinated dependencies: live npm registry lookup.
   - Duplication: n-gram heuristic.
   - Dead exports.
-  - Dependency risk: exact pins, plus OSV.dev CVE lookup for those pinned versions.
+  - Dependency risk: exact pins, plus OSV.dev CVE lookup for every declared dependency.
 
   The two network checks report an explicit `SKIPPED` status when offline or when the registry can't be reached, so a check that didn't run never looks clean.
 - **Composite GitHub Action** (`action.yml`). It writes a job summary and posts or updates a single PR comment. It exposes `overall-grade` and `slop-index` outputs. `.github/workflows/dogfood.yml` runs it against `sample/sampleco` and requires grade F.
 - **SampleCo fixture** (`sample/sampleco/`). A deliberately vibe-coded demo app with 12 planted defects, listed in `PLANTED_DEFECTS.md`.
 - **CodeReckon sample audit report** (`sample-report/`). A worked example of the paid audit, run against SampleCo, with its recall check.
 - **`rules/`**. A hand-mirrored, MIT-licensed public-teaser subset of `bpm-rulepacks`: 17 rule IDs in 16 files (ast-grep slop rules, plus Opengrep secrets and prose-padding rules). These rules are optional and are not wired into the CLI.
+
+### Changed
+
+- Dependency risk now looks up CVEs for range-specified dependencies too, not only exact pins. It checks the version a lockfile resolved (`package-lock.json`, `npm-shrinkwrap.json`, `yarn.lock`), or with no lockfile entry, the lowest version the range allows. Range-floor hits use a separate rule, `SLOP-DEP-RANGE-CVE`, which weighs less in the dependency-risk grade and is left out of the AI-Slop Index. Lookups run six at a time.
 
 ### Fixed
 

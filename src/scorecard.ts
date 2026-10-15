@@ -45,6 +45,9 @@ export function buildScorecard(checks: CheckResult[]): Scorecard {
   );
   const cveCount = countByRulePrefix(depRisk, "SLOP-DEP-CVE");
   const pinnedCount = countByRulePrefix(depRisk, "SLOP-DEP-PINNED");
+  // A vulnerable range floor only *permits* a bad install, so it weighs less than a CVE in a
+  // pinned or locked version and stays out of the AI-Slop Index.
+  const rangeCveCount = countByRulePrefix(depRisk, "SLOP-DEP-RANGE-CVE");
 
   const dimensions: Scorecard["dimensions"] = {
     phantomImports: gradeFromThresholds(phantomCount, [0, 1, 2, 4]),
@@ -52,7 +55,10 @@ export function buildScorecard(checks: CheckResult[]): Scorecard {
     deadExports: gradeFromThresholds(deadCount, [1, 3, 6, 10]),
     secrets: secretsCount > 0 ? "F" : "A",
     dependencyRisk: gradeFromThresholds(
-      hallucinatedCount * 3 + cveCount * 2 + pinnedCount * 0.2,
+      hallucinatedCount * 3 +
+        cveCount * 2 +
+        rangeCveCount * 0.5 +
+        pinnedCount * 0.2,
       [0, 1, 3, 6],
     ),
   };
