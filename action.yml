@@ -1,5 +1,5 @@
 name: "slop-scorecard"
-description: "Free deterministic AI-slop scorecard for a codebase — duplication, phantom imports, hallucinated dependencies, dead exports, secrets, exact-pinned dependencies + CVEs. No LLM calls, no cloud upload of your source (see codereckon.com)."
+description: "Deterministic AI-slop scorecard: phantom imports, hallucinated deps, secrets, duplication, CVEs. No LLM calls."
 branding:
   icon: "shield"
   color: "red"
