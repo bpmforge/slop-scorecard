@@ -5,6 +5,7 @@ import { checkDuplication } from "./checks/duplication.js";
 import { checkDeadExports } from "./checks/deadExports.js";
 import { checkHallucinatedDeps } from "./checks/hallucinatedDeps.js";
 import { checkDependencyRisk } from "./checks/dependencyRisk.js";
+import { discoverLockedVersions } from "./lockfiles.js";
 import { buildScorecard } from "./scorecard.js";
 import type { Scorecard } from "./types.js";
 
@@ -13,7 +14,7 @@ export { buildScorecard } from "./scorecard.js";
 export { renderBadge } from "./badge.js";
 
 export interface ScanOptions {
-  /** Skip network-dependent checks (hallucinated deps, CVE/staleness) entirely. */
+  /** Skip network-dependent checks (hallucinated deps, CVE lookup) entirely. */
   offline?: boolean;
 }
 
@@ -46,7 +47,12 @@ export async function scan(
           findings: [],
         },
       ]
-    : await Promise.all([checkHallucinatedDeps(pkg), checkDependencyRisk(pkg)]);
+    : await Promise.all([
+        checkHallucinatedDeps(pkg),
+        discoverLockedVersions(targetDir).then((locked) =>
+          checkDependencyRisk(pkg, { locked }),
+        ),
+      ]);
 
   return buildScorecard([...deterministic, ...networked]);
 }

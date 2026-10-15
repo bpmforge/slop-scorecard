@@ -12,8 +12,12 @@ Checks:
 - **Duplication** — near-identical code blocks across files (naive n-gram heuristic)
 - **Dead exports** — exported names never referenced elsewhere in the scanned tree (heuristic;
   comments are stripped before this check so a name mentioned only in a comment doesn't count)
-- **Dependency risk** — exact-pinned dependencies, and known CVEs for those pinned versions via
-  OSV.dev (range-specified dependencies are not looked up)
+- **Dependency risk** — exact-pinned dependencies, and known CVEs via OSV.dev for every declared
+  dependency: the pinned version, else the version a `package-lock.json`, `npm-shrinkwrap.json`
+  or `yarn.lock` resolved it to, else the lowest version a simple range (`^1.2.3`, `~1.2`,
+  `>=1.2.3`) allows. A CVE found only at a range floor is reported separately and weighted lower,
+  since an install may already resolve past it. `pnpm-lock.yaml` isn't read yet; those projects
+  get the range-floor lookup
 
 Every network-dependent check reports an explicit `SKIPPED` status (with a reason) if the
 registry is unreachable — it never silently reports zero findings as if it ran clean. The

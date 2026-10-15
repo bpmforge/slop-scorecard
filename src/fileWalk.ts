@@ -12,7 +12,7 @@ const IGNORE_DIRS = new Set([
   ".next",
 ]);
 
-async function walkFiles(
+export async function walkFiles(
   root: string,
   matches: (name: string) => boolean,
 ): Promise<string[]> {
